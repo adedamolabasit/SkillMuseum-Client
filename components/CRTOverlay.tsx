@@ -1,0 +1,13 @@
+export default function CRTOverlay() {
+  return (
+    <div
+      className="fixed inset-0 z-40 pointer-events-none"
+      style={{
+        background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
+        backgroundSize: '100% 4px, 6px 100%',
+        opacity: 0.6,
+        animation: 'crtFlicker 0.15s infinite'
+      }}
+    />
+  );
+}
