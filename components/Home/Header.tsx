@@ -2,11 +2,7 @@
 
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-
-interface HeaderProps {
-  onSignIn: () => void;
-  onSignUp: () => void;
-}
+import { HeaderProps } from '@/shared/types/home';
 
 export default function Header({ onSignIn, onSignUp }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,7 +11,6 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
     <header className="sticky top-0 z-50 backdrop-blur-md border-b border-[#232730] bg-[rgba(18,20,26,0.95)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
-          {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="text-lg sm:text-xl font-bold text-white uppercase tracking-wide">
               <span className="text-[#98dc48]">Skill</span>
@@ -23,14 +18,12 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
             </div>
           </div>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">ABOUT</a>
             <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">FEATURES</a>
             <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">COMMUNITY</a>
           </nav>
 
-          {/* Desktop Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={onSignIn}
@@ -46,7 +39,6 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
           <button 
             className="md:hidden p-2 text-[#8fa0b3] hover:text-[#dbe3eb]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -55,7 +47,6 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4">
             <a href="#" className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]">ABOUT</a>

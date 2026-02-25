@@ -21,13 +21,10 @@ export const SubmitArtifact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[v0] Submit artifact:', formData);
-    // Here you'd submit the form data
   };
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1
           className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2"
@@ -40,9 +37,7 @@ export const SubmitArtifact: React.FC = () => {
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Performance Title *
@@ -58,7 +53,6 @@ export const SubmitArtifact: React.FC = () => {
           />
         </div>
 
-        {/* Game */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Game Title *
@@ -74,7 +68,6 @@ export const SubmitArtifact: React.FC = () => {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Description *
@@ -90,7 +83,6 @@ export const SubmitArtifact: React.FC = () => {
           />
         </div>
 
-        {/* Video URL */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Video URL (YouTube, Twitch, etc.) *
@@ -106,7 +98,6 @@ export const SubmitArtifact: React.FC = () => {
           />
         </div>
 
-        {/* Difficulty */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Difficulty Level
@@ -124,7 +115,6 @@ export const SubmitArtifact: React.FC = () => {
           </select>
         </div>
 
-        {/* Tags */}
         <div>
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
             Tags (comma-separated)
@@ -139,7 +129,6 @@ export const SubmitArtifact: React.FC = () => {
           />
         </div>
 
-        {/* Info Box */}
         <div className="bg-[#1b1e26] border-2 border-[#5ecde3] rounded-lg p-4">
           <p className="text-[#5ecde3] text-xs font-bold mb-2" style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '0.65rem' }}>
             HOW ARTIFACTS ARE SCORED
@@ -152,7 +141,6 @@ export const SubmitArtifact: React.FC = () => {
           </ul>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="w-full px-6 py-4 bg-[#1b1e26] text-[#98dc48] border-2 border-[#5c852b] rounded-lg font-bold hover:shadow-lg transition"

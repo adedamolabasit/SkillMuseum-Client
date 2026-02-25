@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PerformanceArtifact } from '@/lib/archive-types';
-
-interface PerformanceIndexProps {
-  artifacts: PerformanceArtifact[];
-}
+import { PerformanceIndexProps } from '@/shared/types/archive';
 
 export const PerformanceIndex: React.FC<PerformanceIndexProps> = ({ artifacts }) => {
   const [sortBy, setSortBy] = useState<'score' | 'endorsements' | 'replications'>('score');
@@ -27,7 +23,6 @@ export const PerformanceIndex: React.FC<PerformanceIndexProps> = ({ artifacts })
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1
           className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2"
@@ -38,7 +33,6 @@ export const PerformanceIndex: React.FC<PerformanceIndexProps> = ({ artifacts })
         <p className="text-[#8fa0b3] text-sm">The greatest performances ranked by curator consensus.</p>
       </div>
 
-      {/* Sort Controls */}
       <div className="flex gap-2 flex-wrap">
         {(['score', 'endorsements', 'replications'] as const).map((option) => (
           <button
@@ -58,7 +52,6 @@ export const PerformanceIndex: React.FC<PerformanceIndexProps> = ({ artifacts })
         ))}
       </div>
 
-      {/* Leaderboard Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

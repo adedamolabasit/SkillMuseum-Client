@@ -1,50 +1,64 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { ArchiveNavBar } from '@/components/ArchiveNavBar';
-import { ArchiveFloorFeed } from '@/components/ArchiveFloorFeed';
-import { PerformanceIndex } from '@/components/PerformanceIndex';
-import { RelicVault } from '@/components/RelicVault';
-import { Collections } from '@/components/Collections';
-import { Campaigns } from '@/components/Campaigns';
-import { SubmitArtifact } from '@/components/SubmitArtifact';
-import { CuratorProfile } from '@/components/CuratorProfile';
-import CRTOverlay from '@/components/CRTOverlay';
-import { useArchive } from '@/lib/archive-context';
-import { PerformanceArtifact, PerformanceStatus, CuratorProfile as CuratorType } from '@/lib/archive-types';
+import { useState, useEffect } from "react";
+import { ArchiveNavBar } from "@/components/Archive/ArchiveNavBar";
+import { ArchiveFloorFeed } from "@/components/Archive/ArchiveFloorFeed";
+import { PerformanceIndex } from "@/components/Archive/PerformanceIndex";
+import { RelicVault } from "@/components/Archive/RelicVault";
+import { Collections } from "@/components/Archive/Collections";
+import { Campaigns } from "@/components/Archive/Campaigns";
+import { SubmitArtifact } from "@/components/Archive/SubmitArtifact";
+import { CuratorProfile } from "@/components/Archive/CuratorProfile";
+import CRTOverlay from "@/components/Archive/CRTOverlay";
+import { useArchive } from "@/shared/lib/archive-context";
+import {
+  PerformanceArtifact,
+  PerformanceStatus,
+  CuratorProfile as CuratorType,
+} from "@/shared/lib/archive-types";
 
-// Mock data generator
 const generateMockArtifacts = (): PerformanceArtifact[] => {
-  const games = ['CELESTE', 'HOLLOW KNIGHT', 'DARK SOULS', 'NEON ABYSS', 'SEKIRO'];
-  const creators = ['SpeedRunner_Pro', 'GlitchMaster', 'SoloChallenger', 'ProGamer_X', 'IndieStudio'];
+  const games = [
+    "CELESTE",
+    "HOLLOW KNIGHT",
+    "DARK SOULS",
+    "NEON ABYSS",
+    "SEKIRO",
+  ];
+  const creators = [
+    "SpeedRunner_Pro",
+    "GlitchMaster",
+    "SoloChallenger",
+    "ProGamer_X",
+    "IndieStudio",
+  ];
   const statuses = Object.values(PerformanceStatus);
-  
-  // Sample video URLs - using common placeholder video services
+
   const videoUrls = [
-    'https://www.w3schools.com/html/mov_bbb.mp4',
-    'https://www.w3schools.com/html/movie.mp4',
-    'https://test-videos.co.uk/vids/bigbucksbunny/mp4/h264/1080p/Big_Buck_Bunny_1080_10s_1MB.mp4',
-    'https://test-videos.co.uk/vids/bigbucksbunny/mp4/h264/360p/Big_Buck_Bunny_360_10s_1MB.mp4',
+    "https://www.w3schools.com/html/mov_bbb.mp4",
+    "https://www.w3schools.com/html/movie.mp4",
+    "https://test-videos.co.uk/vids/bigbucksbunny/mp4/h264/1080p/Big_Buck_Bunny_1080_10s_1MB.mp4",
+    "https://test-videos.co.uk/vids/bigbucksbunny/mp4/h264/360p/Big_Buck_Bunny_360_10s_1MB.mp4",
   ];
 
   return Array.from({ length: 15 }, (_, i) => ({
-    id: `ARTIFACT_${String(i + 1).padStart(4, '0')}`,
+    id: `ARTIFACT_${String(i + 1).padStart(4, "0")}`,
     title: [
-      'NO-HIT RUN (ANY%)',
-      'FRAME-PERFECT PARRY',
-      'SEQUENCE BREAK DISCOVERY',
-      'SPEED OPTIMIZATION',
-      'GLITCH EXPLOITATION',
-      'BOSS SKIP ROUTE',
-      'PLATFORMING MASTERY',
-      'DODGE CHALLENGE',
-      'COMBO CHAIN (500+)',
-      'ENDURANCE RUN (2H)',
-      'SPEEDRUN WR',
-      'PACIFIST RUN',
-      'PUZZLE OPTIMIZATION',
-      'RESOURCE CONSERVATION',
-      'CREATIVE EXPLOIT'
+      "NO-HIT RUN (ANY%)",
+      "FRAME-PERFECT PARRY",
+      "SEQUENCE BREAK DISCOVERY",
+      "SPEED OPTIMIZATION",
+      "GLITCH EXPLOITATION",
+      "BOSS SKIP ROUTE",
+      "PLATFORMING MASTERY",
+      "DODGE CHALLENGE",
+      "COMBO CHAIN (500+)",
+      "ENDURANCE RUN (2H)",
+      "SPEEDRUN WR",
+      "PACIFIST RUN",
+      "PUZZLE OPTIMIZATION",
+      "RESOURCE CONSERVATION",
+      "CREATIVE EXPLOIT",
     ][i % 15],
     creator: creators[i % creators.length],
     game: games[i % games.length],
@@ -57,47 +71,46 @@ const generateMockArtifacts = (): PerformanceArtifact[] => {
     endorsements: Math.floor(Math.random() * 500),
     videoUrl: videoUrls[i % videoUrls.length],
     imageUrl: `https://picsum.photos/400/300?random=${i}`,
-    tags: ['epic', 'gameplay', 'challenge', 'speedrun'].slice(0, Math.floor(Math.random() * 3) + 1)
+    tags: ["epic", "gameplay", "challenge", "speedrun"].slice(
+      0,
+      Math.floor(Math.random() * 3) + 1,
+    ),
   }));
 };
 
 export default function ArchivePage() {
-  const [activeSection, setActiveSection] = useState('archive');
-  const { curator, setCurator, setArtifacts, artifacts } = useArchive();
-  const [isLoading, setIsLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState("archive");
+  const { setCurator, setArtifacts, artifacts } = useArchive();
 
-  // Initialize data on mount
   useEffect(() => {
     setArtifacts(generateMockArtifacts());
 
     const mockCurator: CuratorType = {
-      id: 'CURATOR_001',
-      username: 'SkyRunner',
+      id: "CURATOR_001",
+      name: "SkyRunner",
       endorsementPower: 8500,
       artifactsStored: 23,
-      joinedDate: new Date('2024-01-15'),
-      bio: 'Speedrunner. Collector. Legend in the making.'
+      joinedDate: new Date("2024-01-15"),
+      bio: "Speedrunner. Collector. Legend in the making.",
     };
     setCurator(mockCurator);
-
-    setIsLoading(false);
-  }, []);
+  }, [setArtifacts, setCurator]);
 
   const renderSection = () => {
     switch (activeSection) {
-      case 'archive':
+      case "archive":
         return <ArchiveFloorFeed artifacts={artifacts} />;
-      case 'index':
+      case "index":
         return <PerformanceIndex artifacts={artifacts} />;
-      case 'relic-vault':
+      case "relic-vault":
         return <RelicVault artifacts={artifacts} />;
-      case 'collections':
+      case "collections":
         return <Collections artifacts={artifacts} />;
-      case 'campaigns':
+      case "campaigns":
         return <Campaigns />;
-      case 'submit':
+      case "submit":
         return <SubmitArtifact />;
-      case 'profile':
+      case "profile":
         return <CuratorProfile />;
       default:
         return <ArchiveFloorFeed artifacts={artifacts} />;
@@ -107,19 +120,19 @@ export default function ArchivePage() {
   return (
     <div className="min-h-screen bg-[#12141a] text-[#dbe3eb]">
       <CRTOverlay />
-      
-      {/* Navigation */}
-      <ArchiveNavBar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {renderSection()}
-      </main>
+      <ArchiveNavBar
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+      />
 
-      {/* Footer */}
+      <main className="max-w-7xl mx-auto px-4 py-8">{renderSection()}</main>
+
       <footer className="border-t border-[#232730] bg-[#0f1116] py-6 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs text-[#7a8699]">
-          <p className="font-mono mb-2">SkillMuseum™ • Every Movement Is History</p>
+          <p className="font-mono mb-2">
+            SkillMuseum™ • Every Movement Is History
+          </p>
           <p>Preserving legendary performances. One artifact at a time.</p>
         </div>
       </footer>

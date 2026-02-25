@@ -2,47 +2,37 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface AuthModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  activeTab: 'signup' | 'signin';
-  setActiveTab: (tab: 'signup' | 'signin') => void;
-}
+import { AuthModalProps } from '@/shared/types/auth';
 
 export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: AuthModalProps) {
   const router = useRouter();
   const [signupData, setSignupData] = useState({ username: '', email: '', password: '' });
   const [signinData, setSigninData] = useState({ email: '', password: '' });
-  const [hoverClose, setHoverClose] = useState(false);
+  const [_hoverClose, setHoverClose] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signupData.username || !signupData.email || !signupData.password) {
-      console.log('[v0] Signup validation failed');
       return;
     }
-    console.log('[v0] Signup:', signupData);
     onClose();
     try {
       await router.push('/archive');
     } catch (error) {
-      console.log('[v0] Navigation error:', error);
+      throw error
     }
   };
 
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signinData.email || !signinData.password) {
-      console.log('[v0] Signin validation failed');
       return;
     }
-    console.log('[v0] Signin:', signinData);
     onClose();
     try {
       await router.push('/archive');
     } catch (error) {
-      console.log('[v0] Navigation error:', error);
+      throw error
     }
   };
 
@@ -61,7 +51,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           boxShadow: '-12px -12px 24px rgba(48, 54, 70, 0.5), 12px 12px 24px rgba(0, 0, 0, 0.8), inset 1px 1px 1px rgba(255,255,255,0.05), 0 0 60px rgba(152, 220, 72, 0.08)'
         }}
       >
-        {/* Top Bar */}
         <div
           className="absolute top-0 left-0 w-full h-1 rounded-t-2xl"
           style={{
@@ -70,7 +59,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           }}
         />
 
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-5 text-[#555] hover:text-[#98dc48] transition text-2xl leading-none"
@@ -80,7 +68,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           ✕
         </button>
 
-        {/* Modal Title */}
         <div className="text-base sm:text-lg font-bold text-white mb-2">
           Join the Museum
         </div>
@@ -88,7 +75,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           Create your account to mint your first performance asset.
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-0 mb-6 border-b-2 border-[#232730]">
           <button
             onClick={() => setActiveTab('signup')}
@@ -112,7 +98,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           </button>
         </div>
 
-        {/* Sign Up Form */}
         {activeTab === 'signup' && (
           <div>
             <form className="space-y-4 mb-6" onSubmit={handleSignup}>
@@ -182,7 +167,6 @@ export default function AuthModal({ isOpen, onClose, activeTab, setActiveTab }: 
           </div>
         )}
 
-        {/* Sign In Form */}
         {activeTab === 'signin' && (
           <div>
             <form className="space-y-4 mb-6" onSubmit={handleSignin}>

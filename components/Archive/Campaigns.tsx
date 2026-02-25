@@ -1,60 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Campaign } from '@/lib/archive-types';
-
-interface CampaignsProps {
-  campaigns?: Campaign[];
-}
+import { Campaign } from '@/shared/lib/archive-types';
+import { CampaignsProps } from '@/shared/types/archive';
+import { campaignArray } from '@/shared/mock';
 
 export const Campaigns: React.FC<CampaignsProps> = ({ campaigns = [] }) => {
   const [selectedStatus, setSelectedStatus] = useState<'ACTIVE' | 'TRENDING' | 'ARCHIVED'>('ACTIVE');
 
-  // Mock campaigns if none provided
-  const mockCampaigns: Campaign[] = campaigns.length > 0 ? campaigns : [
-    {
-      id: '1',
-      title: 'CELESTE SPEEDRUN',
-      game: 'CELESTE',
-      description: 'Complete Celeste any% run under 20 minutes. Show us your mastery.',
-      status: 'ACTIVE',
-      entries: 12,
-      createdBy: 'SpeedRunStudio'
-    },
-    {
-      id: '2',
-      title: 'HOLLOW KNIGHT PATH OF PAIN',
-      game: 'HOLLOW KNIGHT',
-      description: 'Path of Pain no-hit challenge. Can you achieve perfection?',
-      status: 'TRENDING',
-      entries: 45,
-      createdBy: 'IndieGames Inc'
-    },
-    {
-      id: '3',
-      title: 'DARK SOULS SEQUENCE BREAK',
-      game: 'DARK SOULS',
-      description: 'Find the most creative sequence breaks in any area.',
-      status: 'ACTIVE',
-      entries: 28,
-      createdBy: 'ChallengeCreators'
-    },
-    {
-      id: '4',
-      title: 'NEON ABYSS GLITCH',
-      game: 'NEON ABYSS',
-      description: 'Discover and showcase game-breaking glitches responsibly.',
-      status: 'TRENDING',
-      entries: 67,
-      createdBy: 'GlitchMasters'
-    }
-  ];
+  const mockCampaigns: Campaign[] = campaigns.length > 0 ? campaigns : campaignArray;
 
   const filteredCampaigns = mockCampaigns.filter(c => c.status === selectedStatus);
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1
           className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2"
@@ -67,7 +26,6 @@ export const Campaigns: React.FC<CampaignsProps> = ({ campaigns = [] }) => {
         </p>
       </div>
 
-      {/* Status Filter */}
       <div className="flex gap-2 flex-wrap">
         {(['ACTIVE', 'TRENDING', 'ARCHIVED'] as const).map((status) => (
           <button
@@ -85,14 +43,12 @@ export const Campaigns: React.FC<CampaignsProps> = ({ campaigns = [] }) => {
         ))}
       </div>
 
-      {/* Campaign Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredCampaigns.map((campaign) => (
           <div
             key={campaign.id}
             className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg overflow-hidden hover:border-[#5ecde3] transition-all cursor-pointer group"
           >
-            {/* Status Badge */}
             <div
               className={`px-4 py-2 text-xs font-bold uppercase text-center text-white ${
                 campaign.status === 'ACTIVE'
@@ -106,7 +62,6 @@ export const Campaigns: React.FC<CampaignsProps> = ({ campaigns = [] }) => {
               {campaign.status}
             </div>
 
-            {/* Content */}
             <div className="p-5">
               <h3
                 className="text-lg font-bold text-[#dbe3eb] uppercase mb-2 line-clamp-2"

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useArchive } from '@/lib/archive-context';
+import { useArchive } from '@/shared/lib/archive-context';
 import { ArchiveCard } from './ArchiveCard';
 
 export const CuratorProfile: React.FC = () => {
@@ -30,11 +30,10 @@ export const CuratorProfile: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Profile Header */}
       <div className="bg-[#1b1e26] border-2 border-[#98dc48] rounded-lg p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#98dc48] to-[#5ecde3] flex items-center justify-center">
-            <span className="text-3xl font-bold text-[#000]">{curator.name.charAt(0)}</span>
+            <span className="text-3xl font-bold text-[#000]">{curator.name?.charAt(0)}</span>
           </div>
           <div className="flex-1">
             <h1
@@ -52,7 +51,6 @@ export const CuratorProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="bg-[#0f1116] border border-[#232730] rounded-lg p-4 text-center">
             <p className="text-[#7a8699] text-xs font-mono mb-1">ENDORSEMENT POWER</p>
@@ -73,7 +71,6 @@ export const CuratorProfile: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-2 border-b-2 border-[#232730]">
         {(['stored', 'endorsed'] as const).map((tab) => (
           <button
@@ -91,12 +88,10 @@ export const CuratorProfile: React.FC = () => {
         ))}
       </div>
 
-      {/* Tab Content */}
       <div>
         {activeTab === 'stored' ? (
           curatorArtifacts.length > 0 ? (
             <div className="space-y-6">
-              {/* Top Performance Highlight */}
               {stats.topPerformance && (
                 <div className="bg-gradient-to-r from-[#98dc48]20 to-[#5ecde3]20 border-2 border-[#98dc48] rounded-lg p-6">
                   <p className="text-[#98dc48] text-xs font-bold mb-2 uppercase" style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '0.65rem' }}>
@@ -120,7 +115,6 @@ export const CuratorProfile: React.FC = () => {
                 </div>
               )}
 
-              {/* Stored Artifacts Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {curatorArtifacts.map((artifact) => (
                   <ArchiveCard key={artifact.id} artifact={artifact} />
@@ -151,7 +145,6 @@ export const CuratorProfile: React.FC = () => {
         )}
       </div>
 
-      {/* Achievement Section */}
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h2
           className="text-xl font-bold text-[#dbe3eb] uppercase mb-4"

@@ -30,6 +30,7 @@ export interface CuratorProfile {
   id: string;
   name: string;
   avatar?: string;
+  username?: string
   endorsementPower: number;
   artifactsStored: number;
   joinedDate: Date;

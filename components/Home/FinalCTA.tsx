@@ -1,21 +1,7 @@
 'use client';
-
-import { useState } from 'react';
-
-interface FinalCTAProps {
-  onSignUp: () => void;
-}
+import { FinalCTAProps } from "@/shared/types/home";
 
 export default function FinalCTA({ onSignUp }: FinalCTAProps) {
-  const [email, setEmail] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle email submission
-    console.log('Email submitted:', email);
-    setEmail('');
-  };
-
   return (
     <section className="relative px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 border-t border-[#232730]">
       <div className="max-w-2xl mx-auto">

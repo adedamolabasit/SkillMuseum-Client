@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-import { ArchiveProvider } from '@/lib/archive-context'
-import './globals.css'
+import { ArchiveProvider } from '@/shared/lib/archive-context'
+import '../styles/style.css'
 
 export const metadata: Metadata = {
   title: 'The Museum - Digital Performance NFT Platform',
