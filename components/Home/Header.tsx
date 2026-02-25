@@ -1,11 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { HeaderProps } from '@/shared/types/home';
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { HeaderProps } from "@/shared/types/home";
+import { useLogin, usePrivy } from "@privy-io/react-auth";
 
 export default function Header({ onSignIn, onSignUp }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { ready, authenticated } = usePrivy();
+  const { login } = useLogin();
+
+  const disableLogin = !ready || (ready && authenticated);
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md border-b border-[#232730] bg-[rgba(18,20,26,0.95)]">
@@ -19,27 +24,37 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">ABOUT</a>
-            <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">FEATURES</a>
-            <a href="#" className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition">COMMUNITY</a>
+            <a
+              href="#"
+              className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition"
+            >
+              ABOUT
+            </a>
+            <a
+              href="#"
+              className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition"
+            >
+              FEATURES
+            </a>
+            <a
+              href="#"
+              className="text-sm text-[#8fa0b3] hover:text-[#dbe3eb] transition"
+            >
+              COMMUNITY
+            </a>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
             <button
-              onClick={onSignIn}
-              className="px-4 py-2 text-sm font-semibold text-[#5ecde3] border-2 border-[#5ecde3] rounded-lg hover:bg-[#5ecde3] hover:text-[#12141a] transition"
+              disabled={disableLogin}
+              onClick={login}
+              className="px-4 py-2 text-sm font-semibold text-[#12141a] bg-[#98dc48] border-2 border-[#98dc48] rounded-lg hover:bg-[#7ec835] transition cursor-pointer"
             >
-              Sign In
-            </button>
-            <button
-              onClick={onSignUp}
-              className="px-4 py-2 text-sm font-semibold text-[#12141a] bg-[#98dc48] border-2 border-[#98dc48] rounded-lg hover:bg-[#7ec835] transition"
-            >
-              Sign Up
+              Login | Signup
             </button>
           </div>
 
-          <button 
+          <button
             className="md:hidden p-2 text-[#8fa0b3] hover:text-[#dbe3eb]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -49,9 +64,24 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
 
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4">
-            <a href="#" className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]">ABOUT</a>
-            <a href="#" className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]">FEATURES</a>
-            <a href="#" className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]">COMMUNITY</a>
+            <a
+              href="#"
+              className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]"
+            >
+              ABOUT
+            </a>
+            <a
+              href="#"
+              className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]"
+            >
+              FEATURES
+            </a>
+            <a
+              href="#"
+              className="block text-sm text-[#8fa0b3] hover:text-[#dbe3eb]"
+            >
+              COMMUNITY
+            </a>
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => {
