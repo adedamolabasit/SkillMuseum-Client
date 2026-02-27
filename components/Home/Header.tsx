@@ -3,14 +3,55 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { HeaderProps } from "@/shared/types/home";
-import { useLogin, usePrivy } from "@privy-io/react-auth";
+import {
+  useLogin,
+  useLogout,
+  usePrivy,
+  getIdentityToken,
+} from "@privy-io/react-auth";
+import { useVerifyToken, useLogoutUser } from "@/shared/api/hooks/useAuth";
+import { useAuthStore } from "@/shared/store/useAuthStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Header({ onSignIn, onSignUp }: HeaderProps) {
+  const queryClient = useQueryClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { ready, authenticated } = usePrivy();
-  const { login } = useLogin();
+  const { isAppSession } = useAuthStore();
 
-  const disableLogin = !ready || (ready && authenticated);
+  const verifyMutation = useVerifyToken();
+  const logoutMutation = useLogoutUser();
+
+  const { login } = useLogin({
+    onComplete: async () => {
+      const token = await getIdentityToken();
+
+      if (token) {
+        verifyMutation.mutate(token, {
+          onSuccess: (data) => {
+            const userId = data.user.id;
+            if (userId) {
+              useAuthStore.getState().setSession(userId);
+            }
+            queryClient.invalidateQueries({
+              queryKey: ["profile"],
+            });
+          },
+        });
+      }
+    },
+  });
+
+  const { logout } = useLogout({
+    onSuccess: () => {
+      logoutMutation.mutate();
+      useAuthStore.getState().clearSession();
+      queryClient.clear();
+    },
+  });
+
+  const disable = !ready || (ready && authenticated);
+  const loggedIn = ready && authenticated && isAppSession;
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md border-b border-[#232730] bg-[rgba(18,20,26,0.95)]">
@@ -45,13 +86,22 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            <button
-              disabled={disableLogin}
-              onClick={login}
-              className="px-4 py-2 text-sm font-semibold text-[#12141a] bg-[#98dc48] border-2 border-[#98dc48] rounded-lg hover:bg-[#7ec835] transition cursor-pointer"
-            >
-              Login | Signup
-            </button>
+            {loggedIn ? (
+              <button
+                onClick={logout}
+                className="px-4 py-2 text-sm font-semibold text-[#12141a] bg-[#98dc48] border-2 border-[#98dc48] rounded-lg hover:bg-[#7ec835] transition cursor-pointer"
+              >
+                Log out
+              </button>
+            ) : (
+              <button
+                disabled={disable}
+                onClick={login}
+                className="px-4 py-2 text-sm font-semibold text-[#12141a] bg-[#98dc48] border-2 border-[#98dc48] rounded-lg hover:bg-[#7ec835] transition cursor-pointer"
+              >
+                Get Started
+              </button>
+            )}
           </div>
 
           <button
