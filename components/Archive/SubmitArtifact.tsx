@@ -1,30 +1,157 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from "react";
+import { Upload, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+
+import { useCreateAssetWithUpload } from "@/shared/api/hooks/useAssets";
+import { useArtifactForm } from "@/shared/context/ArtifactFormContext";
+import { ArtifactSchema } from "@/shared/models/artifact.schema";
+import { generateIdempotencyKey } from "@/shared/utils/idempotency";
+import { useRouter } from "next/navigation";
 
 export const SubmitArtifact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    game: '',
-    description: '',
-    videoUrl: '',
-    tags: '',
-    difficulty: 'Medium'
-  });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+  const {
+    form,
+    setForm,
+    videoFile,
+    setVideoFile,
+    resetForm,
+    setErrors,
+    errors,
+  } = useArtifactForm();
+
+  const router = useRouter();
+
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const { mutateAsync: createAssetWithUpload, isPending } =
+    useCreateAssetWithUpload();
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const { name: fieldName } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+    setErrors((prev) => {
+      if (!prev) return prev;
+
+      const newErrors = { ...prev } as Record<string, string>;
+
+      delete newErrors[fieldName];
+
+      return newErrors;
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setVideoFile(file);
+    setUploadProgress(0);
+
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(interval);
+          return 95;
+        }
+        return prev + 5;
+      });
+    }, 200);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!videoFile) {
+      toast.error("Please upload a video");
+      return;
+    }
+
+    const rawPayload = {
+      idempotency_key: generateIdempotencyKey(),
+      title: form.title,
+      game: form.game,
+      description: form.description,
+      tags: form.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      difficulty: form.difficulty,
+      statusTier: form.statusTier,
+    };
+
+    const validation = ArtifactSchema.safeParse(rawPayload);
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      validation.error.errors.forEach((err) => {
+        const field = err.path[0] as string;
+        fieldErrors[field] = err.message;
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    if (!videoFile) {
+      setErrors((prev) => ({
+        ...prev,
+        video: "Video is required",
+      }));
+      return;
+    }
+
+    setErrors({});
+
+    const loadingToastId = toast.loading("Creating artifact...");
+
+    try {
+      await createAssetWithUpload({
+        payload: validation.data,
+        file: videoFile,
+      });
+
+      toast.dismiss(loadingToastId);
+      toast.success("Artifact stored successfully 🚀");
+
+      resetForm();
+      setUploadProgress(0);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      router.push("/archive?page=archive");
+    } catch (err) {
+      toast.dismiss(loadingToastId);
+      toast.error("Upload failed. Try again.");
+      console.error(err);
+    }
   };
 
   return (
     <div className="space-y-8">
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => router.push("/archive?page=archive")}
+          className="flex items-center gap-2 text-[#8fa0b3] hover:text-[#98dc48] transition cursor-pointer"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-sm font-bold">Back to Archive</span>
+        </button>
+      </div>
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1
           className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2"
@@ -39,122 +166,169 @@ export const SubmitArtifact: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Performance Title *
           </label>
           <input
             type="text"
             name="title"
-            value={formData.title}
+            value={form.title}
             onChange={handleChange}
             placeholder="E.g., NO-HIT RUN (ANY%)"
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition"
             required
           />
+          {errors.title && (
+            <p className="text-red-400 text-xs mt-1">{errors.title}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Game Title *
           </label>
           <input
             type="text"
             name="game"
-            value={formData.game}
+            value={form.game}
             onChange={handleChange}
             placeholder="E.g., CELESTE"
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition"
+            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
             required
           />
+          {errors.game && (
+            <p className="text-red-400 text-xs mt-1">{errors.game}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Description *
           </label>
           <textarea
             name="description"
-            value={formData.description}
+            value={form.description}
             onChange={handleChange}
-            placeholder="Tell us what makes this performance legendary. What's the story?"
             rows={4}
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition resize-none"
+            placeholder="Tell us what makes this performance legendary."
+            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
             required
           />
+          {errors.description && (
+            <p className="text-red-400 text-xs mt-1">{errors.description}</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-            Video URL (YouTube, Twitch, etc.) *
-          </label>
           <input
-            type="url"
-            name="videoUrl"
-            value={formData.videoUrl}
-            onChange={handleChange}
-            placeholder="https://youtube.com/watch?v=..."
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition"
-            required
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="video-upload"
           />
+
+          <label
+            htmlFor="video-upload"
+            className="flex flex-col items-center justify-center w-full px-4 py-8 border-2 border-dashed border-[#5ecde3] rounded-lg cursor-pointer hover:border-[#98dc48]"
+          >
+            <Upload className="w-12 h-12 text-[#5ecde3] mb-2" />
+            <span className="text-sm text-[#8fa0b3]">
+              {videoFile ? videoFile.name : "Click to upload or drag and drop"}
+            </span>
+            <span className="text-xs text-[#7a8699]">
+              MP4, WebM, MOV up to 500MB
+            </span>
+            {errors.video && (
+              <p className="text-red-400 text-xs mt-1">{errors.video}</p>
+            )}
+          </label>
+
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <div className="mt-3">
+              <div className="w-full bg-[#232730] h-2 rounded">
+                <div
+                  className="bg-[#98dc48] h-2 rounded transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-right mt-1 text-[#8fa0b3]">
+                {uploadProgress}% uploaded
+              </p>
+            </div>
+          )}
+
+          {videoFile && uploadProgress === 100 && (
+            <p className="text-xs text-[#98dc48] mt-2">✓ Upload complete!</p>
+          )}
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Difficulty Level
           </label>
+
           <select
             name="difficulty"
-            value={formData.difficulty}
+            value={form.difficulty}
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] focus:border-[#98dc48] focus:outline-none transition"
+            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
           >
-            <option value="Easy">Easy - Achievable with practice</option>
-            <option value="Medium">Medium - Challenging but possible</option>
-            <option value="Hard">Hard - Elite tier skill required</option>
-            <option value="Impossible">Impossible - Nearly unreplicable</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="impossible">Impossible</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
+            Tier
+          </label>
+
+          <select
+            name="statusTier"
+            value={form.statusTier}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
+          >
+            <option value="Gallery Exhibit">Gallery Exhibit</option>
+            <option value="Masterpiece">Masterpiece</option>
+            <option value="Immutable Relic">Immutable Relic</option>
+            <option value="Legendary Enigma">Legendary Enigma</option>
+            <option value="Priceless Artifact">Priceless Artifact</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Tags (comma-separated)
           </label>
+
           <input
             type="text"
             name="tags"
-            value={formData.tags}
+            value={form.tags}
             onChange={handleChange}
-            placeholder="E.g., speedrun, no-hit, glitch, platformer"
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition"
+            placeholder="speedrun, no-hit, glitch"
+            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
           />
-        </div>
-
-        <div className="bg-[#1b1e26] border-2 border-[#5ecde3] rounded-lg p-4">
-          <p className="text-[#5ecde3] text-xs font-bold mb-2" style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '0.65rem' }}>
-            HOW ARTIFACTS ARE SCORED
-          </p>
-          <ul className="text-[#8fa0b3] text-xs space-y-1">
-            <li>• Curator Endorsements: Community votes on skill &amp; execution</li>
-            <li>• Replication Attempts: How many try to match your performance</li>
-            <li>• Time Preserved: Longevity in the Archive</li>
-            <li>• Rarity Score: Uniqueness of the performance</li>
-          </ul>
+          {errors.tags && (
+            <p className="text-red-400 text-xs mt-1">{errors.tags}</p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full px-6 py-4 bg-[#1b1e26] text-[#98dc48] border-2 border-[#5c852b] rounded-lg font-bold hover:shadow-lg transition"
-          style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '0.75rem',
-            boxShadow: '-4px -4px 10px rgba(60, 70, 80, 0.3), 4px 4px 10px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(152, 220, 72, 0.1)'
-          }}
+          disabled={!videoFile || isPending}
+          className="w-full px-6 py-4 bg-[#1b1e26] text-[#98dc48] border-2 border-[#5c852b] rounded-lg font-bold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed hover:bg-[#232832] transition-colors"
         >
-          STORE IN ARCHIVE
+          {isPending ? "Processing..." : "Store In Archive"}
         </button>
 
-        <p className="text-[#7a8699] text-xs text-center">
-          By submitting, you agree that this performance will be permanently recorded on-chain.
+        <p className="text-xs text-center text-[#7a8699]">
+          By submitting, you agree this will be permanently stored.
         </p>
       </form>
     </div>

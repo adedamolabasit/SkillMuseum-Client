@@ -1,7 +1,9 @@
-'use client';
+"use client";
 import { FinalCTAProps } from "@/shared/types/home";
+import { useRouter } from "next/navigation";
 
 export default function FinalCTA({ onSignUp }: FinalCTAProps) {
+  const router = useRouter();
   return (
     <section className="relative px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 border-t border-[#232730]">
       <div className="max-w-2xl mx-auto">
@@ -15,10 +17,10 @@ export default function FinalCTA({ onSignUp }: FinalCTAProps) {
           </p>
 
           <button
-            onClick={onSignUp}
-            className="px-4 md:px-6 py-2 md:py-2.5 bg-[#98dc48] text-[#12141a] rounded-lg font-semibold hover:bg-[#7ec835] transition text-sm"
+            onClick={() => router.push("/archive")}
+            className="px-4 md:px-6 py-2 md:py-2.5 bg-[#98dc48] text-[#12141a] rounded-lg font-semibold hover:bg-[#7ec835] transition text-sm cursor-pointer"
           >
-            Enter Museum
+            View Artifacts
           </button>
         </div>
       </div>

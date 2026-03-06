@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { HeroProps } from '@/shared/types/home';
+import { useRouter } from "next/navigation";
 
 export default function Hero({ onSignUp }: HeroProps) {
   const [hoverCard, setHoverCard] = useState(false);
+  const router = useRouter()
 
   return (
     <section className="relative px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 overflow-hidden">
@@ -33,10 +35,10 @@ export default function Hero({ onSignUp }: HeroProps) {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                onClick={onSignUp}
+                onClick={() => router.push("/archive")}
                 className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold text-[#12141a] bg-[#98dc48] rounded-lg hover:bg-[#7ec835] transition duration-300 w-full sm:w-auto cursor-pointer"
               >
-                Join The Beta
+                Enter Museum
               </button>
             </div>
           </div>

@@ -26,14 +26,13 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.section)}
-                className={`px-3 py-2 text-xs font-bold uppercase transition-all rounded ${
+                className={`px-3 text-sm py-2  font-bold uppercase transition-all rounded cursor-pointer ${
                   activeSection === item.section
                     ? "text-[#98dc48] border-2 border-[#98dc48] shadow-[0_0_10px_rgba(152,220,72,0.3)]"
                     : "text-[#8fa0b3] border-2 border-transparent hover:border-[#5ecde3]"
                 }`}
                 style={{
                   fontFamily: "'Press Start 2P', cursive",
-                  fontSize: "0.55rem",
                 }}
               >
                 {item.label}

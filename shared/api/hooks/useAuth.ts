@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { verifyTokenApi, logoutApi, getProfileApi } from "..//auth.api";
+import { verifyTokenApi, logoutApi, getProfileApi } from "../auth.api";
 
 export function useProfile() {
   return useQuery({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ArchiveNavBar } from "@/components/Archive/ArchiveNavBar";
 import { ArchiveFloorFeed } from "@/components/Archive/ArchiveFloorFeed";
 import { PerformanceIndex } from "@/components/Archive/PerformanceIndex";
@@ -16,6 +17,7 @@ import {
   PerformanceStatus,
   CuratorProfile as CuratorType,
 } from "@/shared/lib/archive-types";
+import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 
 const generateMockArtifacts = (): PerformanceArtifact[] => {
   const games = [
@@ -82,6 +84,10 @@ export default function ArchivePage() {
   const [activeSection, setActiveSection] = useState("archive");
   const { setCurator, setArtifacts, artifacts } = useArchive();
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   useEffect(() => {
     setArtifacts(generateMockArtifacts());
 
@@ -117,25 +123,48 @@ export default function ArchivePage() {
     }
   };
 
+  useEffect(() => {
+    const page = searchParams.get("page");
+
+    if (page) {
+      setActiveSection(page);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!activeSection) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", activeSection);
+
+    router.replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    });
+  }, [activeSection]);
+
   return (
-    <div className="min-h-screen bg-[#12141a] text-[#dbe3eb]">
-      <CRTOverlay />
+    <ProtectedRoute>
+      <div className="min-h-screen flex flex-col bg-[#12141a] text-[#dbe3eb]">
+        <CRTOverlay />
 
-      <ArchiveNavBar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-      />
+        <ArchiveNavBar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">{renderSection()}</main>
+        <main className="flex-1 py-8">
+          <div className="max-w-7xl mx-auto px-4">{renderSection()}</div>
+        </main>
 
-      <footer className="border-t border-[#232730] bg-[#0f1116] py-6 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-[#7a8699]">
-          <p className="font-mono mb-2">
-            SkillMuseum™ • Every Movement Is History
-          </p>
-          <p>Preserving legendary performances. One artifact at a time.</p>
-        </div>
-      </footer>
-    </div>
+        <footer className="h-50 flex items-center  border-t border-[#232730] bg-[#0f1116] py-6 mt-12 ">
+          <div className="max-w-7xl mx-auto px-4 text-center text-xs text-[#7a8699]">
+            <p className="font-mono mb-2">
+              SkillMuseum™ • Every Movement Is History
+            </p>
+            <p>Preserving legendary performances. One artifact at a time.</p>
+          </div>
+        </footer>
+      </div>
+    </ProtectedRoute>
   );
 }

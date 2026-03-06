@@ -12,12 +12,14 @@ import {
 import { useVerifyToken, useLogoutUser } from "@/shared/api/hooks/useAuth";
 import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export default function Header({ onSignIn, onSignUp }: HeaderProps) {
   const queryClient = useQueryClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { ready, authenticated } = usePrivy();
   const { isAppSession } = useAuthStore();
+  const router = useRouter()
 
   const verifyMutation = useVerifyToken();
   const logoutMutation = useLogoutUser();
@@ -36,6 +38,7 @@ export default function Header({ onSignIn, onSignUp }: HeaderProps) {
             queryClient.invalidateQueries({
               queryKey: ["profile"],
             });
+            router.push('/archive')
           },
         });
       }

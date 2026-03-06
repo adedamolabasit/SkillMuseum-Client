@@ -5,6 +5,7 @@ import { STATUS_CONFIG } from '@/shared/lib/archive-types';
 import { ArchiveCardProps } from '@/shared/types/archive';
 
 export const ArchiveCard: React.FC<ArchiveCardProps> = ({ artifact, onClick }) => {
+
   const statusConfig = STATUS_CONFIG[artifact.status];
   const replicationRate = artifact.replicationAttempts > 0 
     ? ((artifact.successfulReplications / artifact.replicationAttempts) * 100).toFixed(1)
@@ -14,13 +15,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ artifact, onClick }) =
     <div
       onClick={onClick}
       className="cursor-pointer bg-[#1b1e26] rounded-lg border-2 transition-all hover:shadow-lg overflow-hidden group"
-      style={{ borderColor: statusConfig.borderColor }}
+      style={{ borderColor: statusConfig?.borderColor }}
     >
       <div
         className="px-4 py-3 text-xs font-bold uppercase text-center"
         style={{
           backgroundColor: statusConfig.bgColor,
-          color: statusConfig.color,
+          color: statusConfig?.color,
         }}
       >
         {statusConfig.label}
