@@ -1,76 +1,31 @@
-import {
-  ASSET_SUBMISSIONS,
-  COMPLETE_SUBMISSIONS,
-  All_ASSETS,
-  GET_ASSET,
-  GET_USER_ASSET,
-} from "./apiRoutes";
+import { apiClient } from "../lib/apiClient";
 
-export async function createAssetSubmissionApi(data: any) {
-  const res = await fetch(`${ASSET_SUBMISSIONS}`, {
+export const ASSET_SUBMISSIONS = "/assets/submissions";
+export const ALL_ASSETS = "/assets";
+export const GET_USER_ASSET = "/assets/my-assets";
+export const GET_ASSET = (id: string) => `/assets/${id}`;
+export const COMPLETE_SUBMISSIONS = (id: string) =>
+  `/assets/submissions/${id}/complete`;
+
+export function createAssetSubmissionApi(data: any) {
+  return apiClient(ASSET_SUBMISSIONS, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
     body: JSON.stringify(data),
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to create submission");
-  }
-
-  return res.json();
 }
 
-export async function getAssetsApi() {
-  const res = await fetch(`${All_ASSETS}`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch assets");
-  }
-
-  return res.json();
+export function getAssetsApi() {
+  return apiClient(ALL_ASSETS, { method: "GET" });
 }
 
-export async function getUserAssets() {
-  const res = await fetch(GET_USER_ASSET, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch user assets");
-  }
-
-  return res.json();
+export function getUserAssets() {
+  return apiClient(GET_USER_ASSET, { method: "GET" });
 }
 
-export async function getAssetByIdApi(assetId: string) {
-  const res = await fetch(GET_ASSET(assetId), {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Asset not found");
-  }
-
-  return res.json();
+export function getAssetByIdApi(assetId: string) {
+  return apiClient(GET_ASSET(assetId), { method: "GET" });
 }
 
-export async function completeUploadApi(id: string) {
-  const res = await fetch(COMPLETE_SUBMISSIONS(id), {
-    method: "POST",
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to complete upload");
-  }
-
-  return res.json();
+export function completeUploadApi(id: string) {
+  return apiClient(COMPLETE_SUBMISSIONS(id), { method: "POST" });
 }
