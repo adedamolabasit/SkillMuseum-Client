@@ -80,6 +80,8 @@ const generateMockArtifacts = (): PerformanceArtifact[] => {
   }));
 };
 
+// test
+
 export default function ArchivePageClient() {
   const [activeSection, setActiveSection] = useState("archive");
   const { setCurator, setArtifacts, artifacts } = useArchive();
