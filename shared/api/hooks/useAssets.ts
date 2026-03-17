@@ -89,9 +89,8 @@ export function useCreateAssetWithUpload() {
       if (!draftId) {
         throw new Error("Missing assetId");
       }
-      console.log(file, "kkkk");
 
-      fetch(uploadUrl, {
+      await fetch(uploadUrl, {
         method: "PUT",
 
         body: file,
