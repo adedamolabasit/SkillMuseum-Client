@@ -81,7 +81,7 @@ export default function AssetDetailPage() {
         <div className="max-w-5xl mx-auto px-4 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 px-3 py-2 bg-[#1b1e26] border border-[#232730] rounded hover:border-[#98dc48] transition"
+            className="flex items-center gap-2 px-3 py-2 bg-[#1b1e26] border border-[#232730] rounded hover:border-[#98dc48] transition cursor-pointer"
           >
             <ArrowLeft size={16} />
             <span
@@ -109,7 +109,6 @@ export default function AssetDetailPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 pb-12">
-        {/* STATUS */}
         <div
           className="inline-block px-4 py-2 rounded mb-6 text-xs font-bold uppercase text-center"
           style={{
@@ -147,12 +146,12 @@ export default function AssetDetailPage() {
         <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <p className="text-xs text-[#7a8699] font-mono mb-1">CREATOR</p>
-              <p className="text-sm font-bold">{artifact.creatorUserId}</p>
+              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">CREATOR</p>
+              <p className="text-sm font-bold truncate">{artifact.creatorUserId}</p>
             </div>
 
             <div>
-              <p className="text-xs text-[#7a8699] font-mono mb-1">GAME</p>
+              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">GAME</p>
               <p className="text-sm font-bold">{artifact.game}</p>
             </div>
 
@@ -160,7 +159,7 @@ export default function AssetDetailPage() {
               <p className="text-xs text-[#7a8699] font-mono mb-1">
                 ARTIFACT ID
               </p>
-              <p className="text-sm font-mono text-[#98dc48]">{artifact.id}</p>
+              <p className="text-sm font-mono text-[#98dc48] truncate">{artifact.id}</p>
             </div>
 
             <div>

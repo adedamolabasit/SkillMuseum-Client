@@ -1,4 +1,10 @@
-import { ASSET_SUBMISSIONS, COMPLETE_SUBMISSIONS, All_ASSETS , GET_ASSET  } from "./apiRoutes";
+import {
+  ASSET_SUBMISSIONS,
+  COMPLETE_SUBMISSIONS,
+  All_ASSETS,
+  GET_ASSET,
+  GET_USER_ASSET,
+} from "./apiRoutes";
 
 export async function createAssetSubmissionApi(data: any) {
   const res = await fetch(`${ASSET_SUBMISSIONS}`, {
@@ -18,13 +24,26 @@ export async function createAssetSubmissionApi(data: any) {
 }
 
 export async function getAssetsApi() {
-  const res = await fetch(`${All_ASSETS }`, {
+  const res = await fetch(`${All_ASSETS}`, {
     method: "GET",
     credentials: "include",
   });
 
   if (!res.ok) {
     throw new Error("Failed to fetch assets");
+  }
+
+  return res.json();
+}
+
+export async function getUserAssets() {
+  const res = await fetch(GET_USER_ASSET, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch user assets");
   }
 
   return res.json();

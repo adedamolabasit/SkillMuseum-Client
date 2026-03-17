@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ArchiveNavBar } from "@/components/Archive/ArchiveNavBar";
 import { ArchiveFloorFeed } from "@/components/Archive/ArchiveFloorFeed";
 import { PerformanceIndex } from "@/components/Archive/PerformanceIndex";
-import { RelicVault } from "@/components/Archive/RelicVault";
+// import { RelicVault } from "@/components/Archive/RelicVault";
 import { Collections } from "@/components/Archive/Collections";
 import { Campaigns } from "@/components/Archive/Campaigns";
 import { SubmitArtifact } from "@/components/Archive/SubmitArtifact";
@@ -108,8 +108,8 @@ export default function ArchivePage() {
         return <ArchiveFloorFeed artifacts={artifacts} />;
       case "index":
         return <PerformanceIndex artifacts={artifacts} />;
-      case "relic-vault":
-        return <RelicVault artifacts={artifacts} />;
+      // case "relic-vault":
+      //   return <RelicVault artifacts={artifacts} />;
       case "collections":
         return <Collections artifacts={artifacts} />;
       case "campaigns":

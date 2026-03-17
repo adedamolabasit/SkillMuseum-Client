@@ -6,13 +6,32 @@ import {
   getAssetsApi,
   getAssetByIdApi,
   completeUploadApi,
+  getUserAssets,
 } from "../assets.api";
-
 
 export function useAssets() {
   return useQuery({
     queryKey: ["assets"],
     queryFn: getAssetsApi,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+
+    refetchInterval: 10000,
+    refetchIntervalInBackground: false,
+
+    refetchOnWindowFocus: true,
+  });
+}
+
+export function useUserAssets() {
+  return useQuery({
+    queryKey: ["user-assets"],
+    queryFn: getUserAssets,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    // refetchInterval: 10000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -21,9 +40,13 @@ export function useAsset(assetId: string) {
     queryKey: ["assets", assetId],
     queryFn: () => getAssetByIdApi(assetId),
     enabled: !!assetId,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
 }
-
 
 export function useCreateAsset() {
   const queryClient = useQueryClient();
@@ -36,7 +59,6 @@ export function useCreateAsset() {
     },
   });
 }
-
 
 export function useCompleteUpload() {
   const queryClient = useQueryClient();
@@ -55,13 +77,7 @@ export function useCreateAssetWithUpload() {
   const { mutateAsync: completeUpload } = useCompleteUpload();
 
   return useMutation({
-    mutationFn: async ({
-      payload,
-      file,
-    }: {
-      payload: any;
-      file: File;
-    }) => {
+    mutationFn: async ({ payload, file }: { payload: any; file: File }) => {
       const response = await createAssetSubmissionApi(payload);
 
       const { uploadUrl, draftId } = response;
@@ -73,18 +89,16 @@ export function useCreateAssetWithUpload() {
       if (!draftId) {
         throw new Error("Missing assetId");
       }
+      console.log(file, "kkkk");
 
-      const uploadRes = await fetch(uploadUrl, {
+      await fetch(uploadUrl, {
         method: "PUT",
-        headers: {
-          "Content-Type": "video/mp4",
-        },
-        body: file,
-      });
 
-      if (!uploadRes.ok) {
-        throw new Error("Video upload failed");
-      }
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
 
       await completeUpload(draftId);
 
@@ -94,6 +108,5 @@ export function useCreateAssetWithUpload() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["assets"] });
     },
-
   });
 }

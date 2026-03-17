@@ -1,15 +1,16 @@
 import { NavItem } from "../types/archive";
 import { Campaign } from "../lib/archive-types";
 
+
 // Archive
 export const navItems: NavItem[] = [
   { id: "1", label: "ARCHIVE", section: "archive", icon: "📚" },
   { id: "2", label: "COLLECTIONS", section: "collections", icon: "🏛️" },
-  { id: "3", label: "RELIC VAULT", section: "relic-vault", icon: "⚱️" },
+  // { id: "3", label: "RELIC VAULT", section: "relic-vault", icon: "⚱️" },
   { id: "4", label: "CAMPAIGNS", section: "campaigns", icon: "🎮" },
   { id: "5", label: "PERFORMANCE INDEX", section: "index", icon: "📊" },
   // { id: "6", label: "SUBMIT", section: "submit", icon: "⬆️" },
-  { id: "7", label: "PROFILE", section: "profile", icon: "👤" },
+  // { id: "7", label: "PROFILE", section: "profile", icon: "👤" },
 ];
 
 export const campaignArray: Campaign[] = [

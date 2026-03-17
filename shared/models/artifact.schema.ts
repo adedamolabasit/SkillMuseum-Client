@@ -20,4 +20,6 @@ export const ArtifactSchema = z.object({
     "Legendary Enigma",
     "Priceless Artifact",
   ]),
+
+  fileType: z.string(),
 });

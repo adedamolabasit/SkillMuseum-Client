@@ -9,6 +9,7 @@ export enum PerformanceStatus {
 
 export interface PerformanceArtifact {
   id: string;
+  assetId?: string
   title: string;
   creator: string;
   game: string;
@@ -22,6 +23,9 @@ export interface PerformanceArtifact {
   imageUrl?: string;
   videoUrl?: string;
   tags: string[];
+  uploadStatus?: "pending_upload" | "uploaded" | "failed" | string;
+  processingStatus?: "idle" | "processing" | "completed" | string;
+  moderationState?: "pending" | "approved" | "rejected" | string;
 }
 
 export interface CuratorProfile {

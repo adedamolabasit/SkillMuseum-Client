@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { useArchive } from "@/shared/lib/archive-context";
 import { ArchiveNavBarProps } from "@/shared/types/archive";
 import { navItems } from "@/shared/mock";
+import { useRouter } from "next/navigation";
+import { UserProfile } from "@/components/Archive/CuratorProfile";
+import { useProfile } from "@/shared/api/hooks/useAuth";
 
 export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
   activeSection,
@@ -11,11 +14,16 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
 }) => {
   const { curator } = useArchive();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   const handleNavClick = (section: string) => {
     onSectionChange(section);
     setMobileMenuOpen(false);
   };
+
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const user: UserProfile =
+    (profile?.user as UserProfile) ?? ({} as UserProfile);
 
   return (
     <nav className="sticky top-0 z-50 bg-[#12141a] border-b border-[#232730] backdrop-blur-sm">
@@ -41,12 +49,15 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
           </div>
 
           {curator && (
-            <div className="flex items-center gap-3 bg-[#1b1e26] px-4 py-2 rounded border border-[#232730]">
+            <div
+              onClick={() => router.push("/archive?page=profile")}
+              className="flex items-center gap-3 bg-[#1b1e26] px-4 py-2 rounded border border-[#232730] cursor-pointer"
+            >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#98dc48] to-[#5ecde3] flex items-center justify-center text-xs font-bold text-[#000]">
-                {curator.name?.charAt(0)}
+                {user.handle?.charAt(0)}
               </div>
               <div className="text-xs">
-                <p className="text-[#dbe3eb] font-bold">{curator.name}</p>
+                <p className="text-[#dbe3eb] font-bold">{user.handle}</p>
                 <p className="text-[#7a8699] text-xs">
                   Power: {curator.endorsementPower}
                 </p>

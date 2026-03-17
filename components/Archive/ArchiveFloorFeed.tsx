@@ -65,10 +65,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
     PerformanceStatus.PRICELESS_ARTIFACT,
   ];
 
-  /* ============================= */
-  /* ✅ Transform DB → UI Model */
-  /* ============================= */
-
   const transformedArtifacts: PerformanceArtifact[] = useMemo(() => {
     return assets.map((asset) => ({
       id: asset.id,
@@ -87,19 +83,11 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
     }));
   }, [assets]);
 
-  /* ============================= */
-  /* ✅ Filter */
-  /* ============================= */
-
   const filteredArtifacts = useMemo(() => {
     return transformedArtifacts.filter((artifact) =>
       selectedStatus === "ALL" ? true : artifact.status === selectedStatus,
     );
   }, [transformedArtifacts, selectedStatus]);
-
-  /* ============================= */
-  /* ✅ Sort */
-  /* ============================= */
 
   const sortedArtifacts = useMemo(() => {
     return [...filteredArtifacts].sort((a, b) => {
@@ -118,10 +106,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
       }
     });
   }, [filteredArtifacts, sortBy]);
-
-  /* ============================= */
-  /* ✅ Stats */
-  /* ============================= */
 
   const totalStored: number = transformedArtifacts.length;
 
@@ -152,7 +136,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1 className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2">
           THE ARCHIVE FLOOR
@@ -164,7 +147,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
         </p>
       </div>
 
-      {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
         <StatCard label="TOTAL STORED" value={totalStored} color="#98dc48" />
         <StatCard label="IMMORTAL" value={immortalCount} color="#00ff88" />
@@ -176,7 +158,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
         <StatCard label="AVG CURATOR SCORE" value={avgScore} color="#5ecde3" />
       </div>
 
-      {/* FILTER + SORT */}
       <div className="flex justify-between items-center">
         <div>
           <p className="text-xs font-bold uppercase mb-3 text-[#8fa0b3]">
@@ -214,7 +195,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
         </button>
       </div>
 
-      {/* GRID */}
       {!isLoading && sortedArtifacts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedArtifacts.map((artifact) => (
@@ -229,10 +209,6 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
     </div>
   );
 };
-
-/* ============================= */
-/* ✅ Stat Card */
-/* ============================= */
 
 const StatCard = ({
   label,
@@ -250,10 +226,6 @@ const StatCard = ({
     </p>
   </div>
 );
-
-/* ============================= */
-/* ✅ Empty State */
-/* ============================= */
 
 const EmptyState: React.FC = () => (
   <div className="bg-[#1b1e26] border-2 border-dashed border-[#232730] rounded-lg p-12 text-center">

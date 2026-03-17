@@ -88,6 +88,7 @@ export const SubmitArtifact: React.FC = () => {
         .filter(Boolean),
       difficulty: form.difficulty,
       statusTier: form.statusTier,
+      fileType: videoFile.type,
     };
 
     const validation = ArtifactSchema.safeParse(rawPayload);
