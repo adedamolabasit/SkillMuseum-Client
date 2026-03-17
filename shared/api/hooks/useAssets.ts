@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createAssetSubmissionApi,
@@ -11,10 +13,12 @@ export function useAssets() {
   return useQuery({
     queryKey: ["assets"],
     queryFn: getAssetsApi,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+
     refetchInterval: 10000,
     refetchIntervalInBackground: false,
+
     refetchOnWindowFocus: true,
   });
 }
@@ -23,8 +27,9 @@ export function useUserAssets() {
   return useQuery({
     queryKey: ["user-assets"],
     queryFn: getUserAssets,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    // refetchInterval: 10000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
@@ -35,8 +40,8 @@ export function useAsset(assetId: string) {
     queryKey: ["assets", assetId],
     queryFn: () => getAssetByIdApi(assetId),
     enabled: !!assetId,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     refetchInterval: 10000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
@@ -45,17 +50,25 @@ export function useAsset(assetId: string) {
 
 export function useCreateAsset() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createAssetSubmissionApi,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["assets"] }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    },
   });
 }
 
 export function useCompleteUpload() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => completeUploadApi(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["assets"] }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    },
   });
 }
 
@@ -66,13 +79,21 @@ export function useCreateAssetWithUpload() {
   return useMutation({
     mutationFn: async ({ payload, file }: { payload: any; file: File }) => {
       const response = await createAssetSubmissionApi(payload);
+
       const { uploadUrl, draftId } = response;
 
-      if (!uploadUrl) throw new Error("Missing upload URL");
-      if (!draftId) throw new Error("Missing draftId");
+      if (!uploadUrl) {
+        throw new Error("Missing upload URL");
+      }
 
-      await fetch(uploadUrl, {
+      if (!draftId) {
+        throw new Error("Missing assetId");
+      }
+      console.log(file, "kkkk");
+
+      fetch(uploadUrl, {
         method: "PUT",
+
         body: file,
         headers: {
           "Content-Type": file.type,
@@ -83,6 +104,9 @@ export function useCreateAssetWithUpload() {
 
       return draftId;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["assets"] }),
+
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
+    },
   });
 }
