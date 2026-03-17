@@ -188,7 +188,7 @@ export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
         </div>
 
         <button
-          className="px-3 py-2 text-sm font-bold rounded bg-[#98dc48] text-black"
+          className="px-3 py-2 text-sm font-bold rounded bg-[#98dc48] text-black cursor-pointer"
           onClick={() => router.push("/archive?page=submit")}
         >
           Upload Performance
