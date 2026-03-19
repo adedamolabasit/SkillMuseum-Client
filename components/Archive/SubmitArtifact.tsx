@@ -60,13 +60,13 @@ export const SubmitArtifact: React.FC = () => {
 
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
-        if (prev >= 95) {
+        if (prev >= 100) {
           clearInterval(interval);
-          return 95;
+          return 100;
         }
         return prev + 5;
       });
-    }, 200);
+    }, 80);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
