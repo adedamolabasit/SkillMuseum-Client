@@ -39,6 +39,7 @@ export async function getProfileApi() {
   if (!res.ok) {
     throw new Error("Not authenticated");
   }
+  // Todo
 
   return res.json();
 }
