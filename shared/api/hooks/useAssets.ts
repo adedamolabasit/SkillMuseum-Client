@@ -7,6 +7,7 @@ import {
   getAssetByIdApi,
   completeUploadApi,
   getUserAssets,
+  getAnyUserAssets
 } from "../assets.api";
 
 export function useAssets() {
@@ -34,6 +35,17 @@ export function useUserAssets() {
     refetchOnWindowFocus: true,
   });
 }
+export function useAnyUserAssets(userId: string) {
+  return useQuery({
+    queryKey: ["user-any-assets", userId],
+    queryFn: () => getAnyUserAssets(userId),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  });
+}
+
 
 export function useAsset(assetId: string) {
   return useQuery({

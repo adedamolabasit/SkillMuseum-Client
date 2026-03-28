@@ -27,21 +27,6 @@ type DbAsset = {
   successfulReplications?: number;
 };
 
-type ArchiveArtifact = {
-  id: string;
-  title: string;
-  creator: string;
-  game: string;
-  status: PerformanceStatus;
-  curatorScore: number;
-  replicationAttempts: number;
-  successfulReplications: number;
-  endorsements: number;
-  tags: string[];
-  videoUrl: string;
-  storedAt: string | Date;
-};
-
 export const ArchiveFloorFeed: React.FC<ArchiveFloorFeedProps> = () => {
   const router = useRouter();
   const { data, isLoading } = useAssets();

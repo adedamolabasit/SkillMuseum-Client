@@ -83,11 +83,13 @@ export const SubmitArtifact: React.FC = () => {
       game: form.game,
       description: form.description,
       tags: form.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
+        ? form.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : ["general"],
       difficulty: form.difficulty,
-      statusTier: form.statusTier,
+      statusTier: "Gallery Exhibit",
       fileType: videoFile.type,
     };
 
@@ -280,25 +282,6 @@ export const SubmitArtifact: React.FC = () => {
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
             <option value="impossible">Impossible</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
-            Tier
-          </label>
-
-          <select
-            name="statusTier"
-            value={form.statusTier}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
-          >
-            <option value="Gallery Exhibit">Gallery Exhibit</option>
-            <option value="Masterpiece">Masterpiece</option>
-            <option value="Immutable Relic">Immutable Relic</option>
-            <option value="Legendary Enigma">Legendary Enigma</option>
-            <option value="Priceless Artifact">Priceless Artifact</option>
           </select>
         </div>
 

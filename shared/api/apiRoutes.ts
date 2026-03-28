@@ -8,6 +8,8 @@ export const All_ASSETS = `${API_BASE_URL}/assets`;
 export const GET_ASSET = (assetId: string) =>
   `${API_BASE_URL}/assets/${assetId}`;
 export const GET_USER_ASSET = `${API_BASE_URL}/assets/my-assets`;
+export const GET_ANY_USER_ASSET = (userId: string) =>
+  `${API_BASE_URL}/assets/user-assets/${userId}`;
 export const COMPLETE_SUBMISSIONS = (assetId: string) =>
   `${API_BASE_URL}/assets/submissions/${assetId}/complete`;
 export const VOTE_API = `${API_BASE_URL}/votes`;

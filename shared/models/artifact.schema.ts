@@ -13,13 +13,7 @@ export const ArtifactSchema = z.object({
 
   difficulty: z.enum(["easy", "medium", "hard", "impossible"]),
 
-  statusTier: z.enum([
-    "Gallery Exhibit",
-    "Masterpiece",
-    "Immutable Relic",
-    "Legendary Enigma",
-    "Priceless Artifact",
-  ]),
+  statusTier: z.enum(["Gallery Exhibit"]).optional(),
 
   fileType: z.string(),
 });

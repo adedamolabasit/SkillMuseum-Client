@@ -4,6 +4,7 @@ import {
   All_ASSETS,
   GET_ASSET,
   GET_USER_ASSET,
+  GET_ANY_USER_ASSET,
 } from "./apiRoutes";
 
 export async function createAssetSubmissionApi(data: any) {
@@ -38,6 +39,19 @@ export async function getAssetsApi() {
 
 export async function getUserAssets() {
   const res = await fetch(GET_USER_ASSET, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch user assets");
+  }
+
+  return res.json();
+}
+
+export async function getAnyUserAssets(userId: string) {
+  const res = await fetch(GET_ANY_USER_ASSET(userId), {
     method: "GET",
     credentials: "include",
   });

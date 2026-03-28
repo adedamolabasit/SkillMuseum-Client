@@ -37,7 +37,7 @@ export const ArtifactFormProvider = ({
     title: "",
     game: "",
     description: "",
-    tags: 'relic',
+    tags: '',
     difficulty: "medium",
     statusTier: "Gallery Exhibit",
   };

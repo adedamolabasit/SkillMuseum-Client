@@ -9,7 +9,7 @@ export const navItems: NavItem[] = [
   // { id: "3", label: "RELIC VAULT", section: "relic-vault", icon: "⚱️" },
   // { id: "4", label: "CAMPAIGNS", section: "campaigns", icon: "🎮" },
   { id: "5", label: "PERFORMANCE INDEX", section: "index", icon: "📊" },
-  // { id: "6", label: "SUBMIT", section: "submit", icon: "⬆️" },
+  { id: "6", label: "SUBMIT", section: "submit", icon: "⬆️" },
   // { id: "7", label: "PROFILE", section: "profile", icon: "👤" },
 ];
 

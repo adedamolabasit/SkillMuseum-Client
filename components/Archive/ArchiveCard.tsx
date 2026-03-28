@@ -212,7 +212,7 @@ export const ArchiveCard: React.FC<ArchiveCardExtendedProps> = ({
                     <span className="text-[#8fa0b3]">{cat}</span>
 
                     <button
-                      disabled={disabled}
+                      disabled={disabled || !captchaToken}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleVote(cat);
