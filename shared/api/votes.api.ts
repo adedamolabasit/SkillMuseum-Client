@@ -4,6 +4,7 @@ import { VOTE_API, MY_VOTES, GET_VOTES, GET_ASSETS_VOTES   } from "./apiRoutes";
 export async function castVoteApi(data: {
   assetId: string;
   category: string;
+  captchaToken?: string;
 }) {
   const res = await fetch(VOTE_API, {
     method: "POST",

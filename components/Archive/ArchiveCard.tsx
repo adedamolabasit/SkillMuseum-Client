@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { STATUS_CONFIG } from "@/shared/lib/archive-types";
 import { ArchiveCardProps } from "@/shared/types/archive";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useVote, useMyVotes } from "@/shared/api/hooks/useVotes";
+import { toast } from "sonner";
 
 interface ArchiveCardExtendedProps extends ArchiveCardProps {
   voteCounts?: { [category: string]: number };
@@ -21,23 +23,31 @@ export const ArchiveCard: React.FC<ArchiveCardExtendedProps> = ({
 }) => {
   const statusConfig = STATUS_CONFIG[artifact.status];
 
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const {
     data: myVotesData,
     refetch: refetchMyVotes,
     isLoading,
   } = useMyVotes();
+
   const [localVotes, setLocalVotes] = useState<{ [category: string]: string }>(
     {},
   );
+
   const { mutate: castVote, isPending } = useVote();
+
   const cardVideoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
     if (myVotesData?.votes) {
       const votesMap: { [category: string]: string } = {};
+
       myVotesData.votes.forEach((v: { assetId: string; category: string }) => {
         votesMap[v.category] = v.assetId;
       });
+
       setLocalVotes(votesMap);
     }
   }, [myVotesData]);
@@ -45,37 +55,48 @@ export const ArchiveCard: React.FC<ArchiveCardExtendedProps> = ({
   const handleVote = (category: string) => {
     if (isPending) return;
 
+    if (!captchaToken) {
+      toast.info("Please verify you are human.");
+      return;
+    }
+
     const alreadyVotedAssetId = localVotes[category];
 
     if (alreadyVotedAssetId === artifact.id) {
       castVote(
-        { assetId: artifact.id, category },
+        { assetId: artifact.id, category, captchaToken },
         {
           onSuccess: () => {
             refetchMyVotes();
             fetchVotes?.();
           },
-          onError: (err: any) => alert(err.message),
+          onError: (err: any) =>
+            toast.error(
+              "Oops! Something went wrong. Contact admin if it persists.",
+            ),
         },
       );
       return;
     }
 
     if (alreadyVotedAssetId && alreadyVotedAssetId !== artifact.id) {
-      alert(
-        `You have already voted for "${category}" on another asset. Unvote that first to vote here.`,
+      toast.info(
+        `You have already voted for "${category}" on another asset. Unvote that first.`,
       );
       return;
     }
 
     castVote(
-      { assetId: artifact.id, category },
+      { assetId: artifact.id, category, captchaToken },
       {
         onSuccess: () => {
           refetchMyVotes();
           fetchVotes?.();
         },
-        onError: (err: any) => alert(err.message),
+        onError: (err: any) =>
+          toast.error(
+            "Oops! Something went wrong. Contact admin if it persists.",
+          ),
       },
     );
   };
@@ -220,6 +241,13 @@ export const ArchiveCard: React.FC<ArchiveCardExtendedProps> = ({
                   </div>
                 );
               })}
+            </div>
+
+            <div className="flex justify-center items-center bg-[#1b1e26] p-4 rounded-lg mt-4">
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={(token) => setCaptchaToken(token)}
+              />
             </div>
 
             <button

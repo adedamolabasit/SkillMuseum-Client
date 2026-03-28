@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, Heart, Share2, Flag } from "lucide-react";
 import moment from "moment";
+import { toast } from "sonner";
 
 import { useAsset } from "@/shared/api/hooks/useAssets";
 import { STATUS_CONFIG } from "@/shared/lib/archive-types";
@@ -65,7 +66,7 @@ export default function AssetDetailPage() {
       });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      alert("Link copied to clipboard!");
+      toast.info("Link copied to clipboard");
     }
   };
 
@@ -146,12 +147,18 @@ export default function AssetDetailPage() {
         <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">CREATOR</p>
-              <p className="text-sm font-bold truncate">{artifact.creatorUserId}</p>
+              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">
+                CREATOR
+              </p>
+              <p className="text-sm font-bold truncate">
+                {artifact.creatorUserId}
+              </p>
             </div>
 
             <div>
-              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">GAME</p>
+              <p className="text-xs text-[#7a8699] font-mono mb-1 truncate">
+                GAME
+              </p>
               <p className="text-sm font-bold">{artifact.game}</p>
             </div>
 
@@ -159,7 +166,9 @@ export default function AssetDetailPage() {
               <p className="text-xs text-[#7a8699] font-mono mb-1">
                 ARTIFACT ID
               </p>
-              <p className="text-sm font-mono text-[#98dc48] truncate">{artifact.id}</p>
+              <p className="text-sm font-mono text-[#98dc48] truncate">
+                {artifact.id}
+              </p>
             </div>
 
             <div>
