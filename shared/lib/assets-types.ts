@@ -1,7 +1,3 @@
-// ===============================
-// Upload / Processing / Moderation
-// ===============================
-
 export const UploadStatus = {
   PENDING_UPLOAD: "pending_upload",
   UPLOADED: "uploaded",
@@ -21,9 +17,6 @@ export const ModerationStatus = {
   REJECTED: "rejected",
 } as const;
 
-// ===============================
-// Tier System (USED FOR ARCHIVE CARD)
-// ===============================
 
 export const StatusTier = {
   GALLERY_EXHIBIT: "Gallery Exhibit",
@@ -36,17 +29,13 @@ export const StatusTier = {
 export type StatusTierType =
   (typeof StatusTier)[keyof typeof StatusTier];
 
-// ===============================
-// Artifact Model
-// ===============================
-
 export interface PerformanceArtifact {
   id: string;
   title: string;
   creator: string;
   game: string;
   description: string;
-  status: StatusTierType; // ✅ updated
+  status: StatusTierType; 
   storedAt: Date;
   curatorScore: number;
   replicationAttempts: number;
@@ -56,10 +45,6 @@ export interface PerformanceArtifact {
   videoUrl?: string;
   tags: string[];
 }
-
-// ===============================
-// STATUS CONFIG (UPDATED)
-// ===============================
 
 export const STATUS_CONFIG: Record<
   StatusTierType,

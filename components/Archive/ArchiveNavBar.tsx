@@ -21,7 +21,7 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
     setMobileMenuOpen(false);
   };
 
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: profile } = useProfile();
   const user: UserProfile =
     (profile?.user as UserProfile) ?? ({} as UserProfile);
 

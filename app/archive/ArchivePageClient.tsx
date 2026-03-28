@@ -6,6 +6,7 @@ import { ArchiveNavBar } from "@/components/Archive/ArchiveNavBar";
 import { ArchiveFloorFeed } from "@/components/Archive/ArchiveFloorFeed";
 import { PerformanceIndex } from "@/components/Archive/PerformanceIndex";
 // import { RelicVault } from "@/components/Archive/RelicVault";
+import { ArchiveFloorFeedVoting } from "@/components/Archive/ArchiveFloorFeedVoting";
 import { Collections } from "@/components/Archive/Collections";
 import { Campaigns } from "@/components/Archive/Campaigns";
 import { SubmitArtifact } from "@/components/Archive/SubmitArtifact";
@@ -107,11 +108,11 @@ export default function ArchivePageClient() {
   const renderSection = () => {
     switch (activeSection) {
       case "archive":
-        return <ArchiveFloorFeed artifacts={artifacts} />;
+        return <ArchiveFloorFeedVoting artifacts={artifacts} />;
       case "index":
         return <PerformanceIndex artifacts={artifacts} />;
-      // case "relic-vault":
-      //   return <RelicVault artifacts={artifacts} />;
+      case "relic-vault":
+        return <ArchiveFloorFeedVoting artifacts={artifacts} />;
       case "collections":
         return <Collections artifacts={artifacts} />;
       case "campaigns":

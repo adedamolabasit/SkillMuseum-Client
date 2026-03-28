@@ -52,7 +52,8 @@ export const Collections: React.FC<CollectionsProps> = ({ artifacts }) => {
           COLLECTIONS
         </h1>
         <p className="text-[#8fa0b3] text-sm">
-          Browse performances by game. Discover what&apos;s epic in each universe.
+          Browse performances by game. Discover what&apos;s epic in each
+          universe.
         </p>
       </div>
 

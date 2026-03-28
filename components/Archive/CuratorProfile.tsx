@@ -17,7 +17,6 @@ import { useAuthStore } from "@/shared/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogoutUser } from "@/shared/api/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 type MyAsset = {
   id: string;
@@ -270,21 +269,13 @@ export const CuratorProfile: React.FC = () => {
         {!isLoading && sortedArtifacts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sortedArtifacts.map((artifact) => (
-              <ArchiveCard
-                // onClick={() => router.push(`/archive/${artifact.id}`)}
-                key={artifact.id}
-                artifact={artifact}
-                uploadStatus={artifact.uploadStatus}
-                processingStatus={artifact.processingStatus}
-                moderationState={artifact.moderationState}
-              />
+              <ArchiveCard key={artifact.id} artifact={artifact} />
             ))}
           </div>
         ) : (
           <EmptyState />
         )}
       </div>
-      {/* /test */}
 
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
