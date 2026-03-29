@@ -59,7 +59,7 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
               <div className="text-xs">
                 <p className="text-[#dbe3eb] font-bold">{user.handle}</p>
                 <p className="text-[#7a8699] text-xs">
-                  Power: {curator.endorsementPower}
+                  Power: 0.0
                 </p>
               </div>
             </div>

@@ -5,6 +5,9 @@ export const LOGOUT_USER = `${API_BASE_URL}/auth/logout`;
 export const PROFILE = `${API_BASE_URL}/auth/me`;
 export const ASSET_SUBMISSIONS = `${API_BASE_URL}/assets/submissions`;
 export const All_ASSETS = `${API_BASE_URL}/assets`;
+export const INITIATE_UPLOAD_ASSETS = `${API_BASE_URL}/assets/uploads/initiate`;
+export const CHUNK_UPLOAD_ASSETS = `${API_BASE_URL}/assets/uploads/part-url`;
+export const COMPLETE_CHUNK_UPLOAD_ASSETS = `${API_BASE_URL}/assets/uploads/complete`;
 export const GET_ASSET = (assetId: string) =>
   `${API_BASE_URL}/assets/${assetId}`;
 export const GET_USER_ASSET = `${API_BASE_URL}/assets/my-assets`;

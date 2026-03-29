@@ -1,13 +1,10 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useArchive } from "@/shared/lib/archive-context";
 import { useUserAssets } from "@/shared/api/hooks/useAssets";
-import {
-  PerformanceStatus,
-  PerformanceArtifact,
-} from "@/shared/lib/archive-types";
+import { PerformanceStatus } from "@/shared/lib/archive-types";
 import { useProfile } from "@/shared/api/hooks/useAuth";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,8 +12,6 @@ import {
   faPen,
   faRightFromBracket,
   faRotateRight,
-  faEye,
-  faEyeSlash,
   faCheck,
   faClock,
   faExclamationTriangle,
@@ -63,8 +58,8 @@ export interface UserProfile {
 
 export const CuratorProfile: React.FC = () => {
   const { data, isLoading, refetch: refetchAssets } = useUserAssets();
-  const { data: profile, isLoading: profileLoading } = useProfile();
-  const { data: myVotesData, refetch: refetchVotes } = useMyVotes();
+  const { data: profile } = useProfile();
+  const { data: myVotesData } = useMyVotes();
   const { data: allAssetsData } = useAssets();
   const { curator } = useArchive();
   const router = useRouter();
@@ -119,22 +114,6 @@ export const CuratorProfile: React.FC = () => {
       toast.error("Failed to retry upload. Please try again.");
     } finally {
       setRetryingAssetId(null);
-    }
-  };
-
-  const handlePublishStatus = async (
-    assetId: string,
-    currentStatus: string,
-  ) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await refetchAssets();
-      const newStatus = currentStatus === "published" ? "draft" : "published";
-      toast.success(
-        `Artifact ${newStatus === "published" ? "published" : "unpublished"} successfully!`,
-      );
-    } catch (error) {
-      toast.error("Failed to update status. Please try again.");
     }
   };
 
@@ -224,7 +203,6 @@ export const CuratorProfile: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Profile Header */}
       <div className="bg-gradient-to-r from-[#1b1e26] to-[#0f1116] border border-[#232730] rounded-xl overflow-hidden">
         <div className="relative h-32 bg-gradient-to-r from-[#98dc48]/20 to-[#5ecde3]/20">
           <button
@@ -271,7 +249,6 @@ export const CuratorProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-4 gap-4 mt-6">
             <div className="bg-[#0f1116]/50 rounded-lg p-4 border border-[#232730]">
               <div className="flex items-center gap-2 text-[#98dc48] mb-1">
@@ -305,15 +282,12 @@ export const CuratorProfile: React.FC = () => {
                 <FontAwesomeIcon icon={faChartLine} size="sm" />
                 <p className="text-xs text-[#7a8699]">ENDORSEMENT POWER</p>
               </div>
-              <p className="text-2xl font-bold text-[#dbe3eb]">
-                {curator.endorsementPower || 0}
-              </p>
+              <p className="text-2xl font-bold text-[#dbe3eb]">{0}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="border-b border-[#232730]">
         <div className="flex gap-6">
           {(["stored", "voted"] as const).map((tab) => (
@@ -338,7 +312,6 @@ export const CuratorProfile: React.FC = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div>
         {activeTab === "stored" ? (
           !isLoading && assets.length > 0 ? (
@@ -353,7 +326,6 @@ export const CuratorProfile: React.FC = () => {
                     className="bg-[#1b1e26] border border-[#232730] rounded-xl overflow-hidden hover:border-[#5ecde3] transition-all group"
                   >
                     <div className="flex flex-col md:flex-row">
-                      {/* Thumbnail */}
                       <div
                         className="relative md:w-64 h-48 bg-black cursor-pointer"
                         onClick={() => {
@@ -395,7 +367,6 @@ export const CuratorProfile: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Content */}
                       <div className="flex-1 p-6">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
@@ -427,7 +398,6 @@ export const CuratorProfile: React.FC = () => {
                           {asset.description}
                         </p>
 
-                        {/* Tags */}
                         {asset.tags && asset.tags.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-4">
                             {asset.tags.slice(0, 4).map((tag, idx) => (
@@ -442,7 +412,6 @@ export const CuratorProfile: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Actions */}
                         <div className="flex gap-3">
                           {statusConfig.showRetry && (
                             <button
@@ -468,7 +437,7 @@ export const CuratorProfile: React.FC = () => {
                           {asset.uploadStatus === "uploaded" &&
                             asset.processingStatus === "completed" && (
                               <>
-                                <button
+                                {/* <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handlePublishStatus(asset.id, asset.status);
@@ -489,14 +458,14 @@ export const CuratorProfile: React.FC = () => {
                                   {asset.status === "published"
                                     ? "Unpublish"
                                     : "Publish"}
-                                </button>
+                                </button> */}
 
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     router.push(`/archive/${asset.id}`);
                                   }}
-                                  className="px-4 py-2 bg-[#5ecde3] text-black rounded-lg text-sm font-medium hover:bg-[#4db0c7] transition flex items-center gap-2"
+                                  className="px-4 py-2 bg-[#5ecde3] text-black rounded-lg text-sm font-medium hover:bg-[#4db0c7] transition flex items-center gap-2 cursor-pointer"
                                 >
                                   View Details
                                 </button>
@@ -512,8 +481,7 @@ export const CuratorProfile: React.FC = () => {
           ) : (
             <EmptyState message="No artifacts stored yet. Upload your first performance!" />
           )
-        ) : // Voted Artifacts Tab
-        !isLoading && votedAssets.length > 0 ? (
+        ) : !isLoading && votedAssets.length > 0 ? (
           <div className="space-y-4">
             {votedAssets.map((vote: { assetId: string; category: string }) => {
               const assetDetails = getVotedAssetDetails(vote.assetId);
@@ -581,7 +549,6 @@ export const CuratorProfile: React.FC = () => {
         )}
       </div>
 
-      {/* Edit Profile Modal */}
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="bg-[#1b1e26] rounded-xl w-full max-w-md p-6">
@@ -631,7 +598,6 @@ export const CuratorProfile: React.FC = () => {
         </div>
       )}
 
-      {/* Achievements Section */}
       <div className="bg-[#1b1e26] border border-[#232730] rounded-xl p-6">
         <h2 className="text-lg font-semibold text-[#dbe3eb] mb-6 flex items-center gap-2">
           <span className="w-1 h-6 bg-[#98dc48] rounded-full"></span>

@@ -1,13 +1,12 @@
 import { PerformanceStatus } from "@/shared/lib/archive-types";
-import { 
+import {
   faTachometerAlt,
   faSkull,
   faDragon,
   faBolt,
-  faFire
+  faFire,
 } from "@fortawesome/free-solid-svg-icons";
 
-// Status mapping for display
 export const getStatusDisplay = (statusTier: string) => {
   const statusMap: Record<string, string> = {
     [PerformanceStatus.GALLERY_EXHIBIT]: "Gallery Exhibit",
@@ -16,7 +15,6 @@ export const getStatusDisplay = (statusTier: string) => {
   return statusMap[statusTier] || "Gallery Exhibit";
 };
 
-// Difficulty icons mapping
 export const getDifficultyIcon = (difficulty: string) => {
   const difficultyMap: Record<string, any> = {
     easy: { icon: faTachometerAlt, color: "#10b981", label: "Easy" },
@@ -25,5 +23,26 @@ export const getDifficultyIcon = (difficulty: string) => {
     impossible: { icon: faSkull, color: "#8b5cf6", label: "Impossible" },
     legendary: { icon: faDragon, color: "#ec489a", label: "Legendary" },
   };
-  return difficultyMap[difficulty] || { icon: faTachometerAlt, color: "#6b7280", label: "Unknown" };
+  return (
+    difficultyMap[difficulty] || {
+      icon: faTachometerAlt,
+      color: "#6b7280",
+      label: "Unknown",
+    }
+  );
+};
+
+export const formatFileSize = (bytes: number | undefined): string => {
+  if (!bytes) return "0 B";
+
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  let i = 0;
+  let value = bytes;
+
+  while (value >= 1024 && i < sizes.length - 1) {
+    value /= 1024;
+    i++;
+  }
+
+  return `${parseFloat(value.toFixed(2))} ${sizes[i]}`;
 };

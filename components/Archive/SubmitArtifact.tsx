@@ -4,7 +4,7 @@ import React, { useState, useRef } from "react";
 import { Upload, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
-import { useCreateAssetWithUpload } from "@/shared/api/hooks/useAssets";
+import { useCreateAssetWithUpload } from "@/shared/api/hooks/useCreateAssetWithUpload";
 import { useArtifactForm } from "@/shared/context/ArtifactFormContext";
 import { ArtifactSchema } from "@/shared/models/artifact.schema";
 import { generateIdempotencyKey } from "@/shared/utils/idempotency";
@@ -26,6 +26,9 @@ export const SubmitArtifact: React.FC = () => {
   const router = useRouter();
 
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<
+    "idle" | "uploading" | "complete" | "error"
+  >("idle");
 
   const { mutateAsync: createAssetWithUpload, isPending } =
     useCreateAssetWithUpload();
@@ -57,16 +60,12 @@ export const SubmitArtifact: React.FC = () => {
 
     setVideoFile(file);
     setUploadProgress(0);
+    setUploadStatus("idle");
 
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 80);
+    setErrors((prev) => ({
+      ...prev,
+      video: undefined,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,6 +73,20 @@ export const SubmitArtifact: React.FC = () => {
 
     if (!videoFile) {
       toast.error("Please upload a video");
+      setErrors((prev) => ({
+        ...prev,
+        video: "Video is required",
+      }));
+      return;
+    }
+
+    const MAX_FILE_SIZE = 500 * 1024 * 1024;
+    if (videoFile.size > MAX_FILE_SIZE) {
+      toast.error("File size exceeds 500MB limit");
+      setErrors((prev) => ({
+        ...prev,
+        video: "File must be less than 500MB",
+      }));
       return;
     }
 
@@ -104,43 +117,76 @@ export const SubmitArtifact: React.FC = () => {
       });
 
       setErrors(fieldErrors);
-      return;
-    }
 
-    if (!videoFile) {
-      setErrors((prev) => ({
-        ...prev,
-        video: "Video is required",
-      }));
+      Object.entries(fieldErrors).forEach(([field, message]) => {
+        toast.error(`${field}: ${message}`);
+      });
+
       return;
     }
 
     setErrors({});
+    setUploadStatus("uploading");
+    setUploadProgress(0);
 
-    const loadingToastId = toast.loading("Creating artifact...");
+    const loadingToastId = toast.loading("Preparing upload...");
 
     try {
       await createAssetWithUpload({
         payload: validation.data,
         file: videoFile,
+        onProgress: (progress) => {
+          setUploadProgress(progress);
+          toast.loading(`Uploading: ${Math.round(progress)}%`, {
+            id: loadingToastId,
+          });
+        },
       });
 
-      toast.dismiss(loadingToastId);
-      toast.success("Artifact stored successfully 🚀");
+      setUploadStatus("complete");
+      setUploadProgress(100);
 
-      resetForm();
+      toast.dismiss(loadingToastId);
+      toast.success("Artifact stored successfully! 🚀", {
+        duration: 4000,
+      });
+
+      setTimeout(() => {
+        resetForm();
+        setUploadProgress(0);
+        setUploadStatus("idle");
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+
+        router.push("/archive?page=profile");
+      }, 1500);
+    } catch (err: any) {
+      setUploadStatus("error");
+      toast.dismiss(loadingToastId);
+
+      const errorMessage = err?.message || "Upload failed. Please try again.";
+      toast.error(errorMessage, {
+        duration: 5000,
+      });
+
       setUploadProgress(0);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      router.push("/archive?page=archive");
-    } catch (err) {
-      toast.dismiss(loadingToastId);
-      toast.error("Upload failed. Try again.");
-      console.error(err);
     }
+  };
+
+  const getUploadProgressColor = () => {
+    if (uploadStatus === "error") return "bg-red-500";
+    if (uploadStatus === "complete") return "bg-green-500";
+    return "bg-[#98dc48]";
+  };
+
+  const getFileSizeDisplay = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
@@ -155,6 +201,7 @@ export const SubmitArtifact: React.FC = () => {
           <span className="text-sm font-bold">Back to Archive</span>
         </button>
       </div>
+
       <div className="bg-[#1b1e26] border-2 border-[#232730] rounded-lg p-6">
         <h1
           className="text-3xl sm:text-4xl font-bold text-[#dbe3eb] uppercase mb-2"
@@ -180,6 +227,7 @@ export const SubmitArtifact: React.FC = () => {
             placeholder="E.g., NO-HIT RUN (ANY%)"
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb] placeholder-[#7a8699] focus:border-[#98dc48] focus:outline-none transition"
             required
+            disabled={isPending}
           />
           {errors.title && (
             <p className="text-red-400 text-xs mt-1">{errors.title}</p>
@@ -198,6 +246,7 @@ export const SubmitArtifact: React.FC = () => {
             placeholder="E.g., CELESTE"
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
             required
+            disabled={isPending}
           />
           {errors.game && (
             <p className="text-red-400 text-xs mt-1">{errors.game}</p>
@@ -216,6 +265,7 @@ export const SubmitArtifact: React.FC = () => {
             placeholder="Tell us what makes this performance legendary."
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
             required
+            disabled={isPending}
           />
           {errors.description && (
             <p className="text-red-400 text-xs mt-1">{errors.description}</p>
@@ -230,40 +280,85 @@ export const SubmitArtifact: React.FC = () => {
             onChange={handleFileChange}
             className="hidden"
             id="video-upload"
+            disabled={isPending}
           />
 
           <label
             htmlFor="video-upload"
-            className="flex flex-col items-center justify-center w-full px-4 py-8 border-2 border-dashed border-[#5ecde3] rounded-lg cursor-pointer hover:border-[#98dc48]"
+            className={`flex flex-col items-center justify-center w-full px-4 py-8 border-2 border-dashed rounded-lg cursor-pointer transition
+              ${
+                uploadStatus === "error"
+                  ? "border-red-500 bg-red-500/10"
+                  : uploadStatus === "complete"
+                    ? "border-green-500 bg-green-500/10"
+                    : "border-[#5ecde3] hover:border-[#98dc48]"
+              } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <Upload className="w-12 h-12 text-[#5ecde3] mb-2" />
-            <span className="text-sm text-[#8fa0b3]">
-              {videoFile ? videoFile.name : "Click to upload or drag and drop"}
+            <Upload
+              className={`w-12 h-12 mb-2 ${
+                uploadStatus === "error"
+                  ? "text-red-500"
+                  : uploadStatus === "complete"
+                    ? "text-green-500"
+                    : "text-[#5ecde3]"
+              }`}
+            />
+            <span className="text-sm text-[#8fa0b3] text-center">
+              {videoFile
+                ? `${videoFile.name} (${getFileSizeDisplay(videoFile.size)})`
+                : "Click to upload or drag and drop"}
             </span>
-            <span className="text-xs text-[#7a8699]">
+            <span className="text-xs text-[#7a8699] mt-1">
               MP4, WebM, MOV up to 500MB
             </span>
             {errors.video && (
-              <p className="text-red-400 text-xs mt-1">{errors.video}</p>
+              <p className="text-red-400 text-xs mt-2">{errors.video}</p>
             )}
           </label>
 
-          {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="mt-3">
-              <div className="w-full bg-[#232730] h-2 rounded">
+          {(uploadProgress > 0 || uploadStatus === "uploading") && (
+            <div className="mt-4">
+              <div className="flex justify-between text-xs text-[#8fa0b3] mb-1">
+                <span>
+                  {uploadStatus === "uploading"
+                    ? "Uploading..."
+                    : uploadStatus === "complete"
+                      ? "Complete!"
+                      : "Preparing..."}
+                </span>
+                <span>{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="w-full bg-[#232730] h-2 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#98dc48] h-2 rounded transition-all duration-300"
+                  className={`${getUploadProgressColor()} h-2 rounded-full transition-all duration-300 ease-out`}
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
-              <p className="text-xs text-right mt-1 text-[#8fa0b3]">
-                {uploadProgress}% uploaded
+
+              {videoFile &&
+                videoFile.size > 10 * 1024 * 1024 &&
+                uploadStatus === "uploading" && (
+                  <p className="text-xs text-[#7a8699] mt-2 text-center">
+                    Large file detected - using optimized multipart upload
+                  </p>
+                )}
+            </div>
+          )}
+
+          {uploadStatus === "complete" && (
+            <div className="mt-3 p-3 bg-green-500/10 border border-green-500 rounded-lg">
+              <p className="text-xs text-green-500 text-center">
+                ✓ Upload complete! Redirecting to archive...
               </p>
             </div>
           )}
 
-          {videoFile && uploadProgress === 100 && (
-            <p className="text-xs text-[#98dc48] mt-2">✓ Upload complete!</p>
+          {uploadStatus === "error" && (
+            <div className="mt-3 p-3 bg-red-500/10 border border-red-500 rounded-lg">
+              <p className="text-xs text-red-500 text-center">
+                ✗ Upload failed. Please check your connection and try again.
+              </p>
+            </div>
           )}
         </div>
 
@@ -271,12 +366,12 @@ export const SubmitArtifact: React.FC = () => {
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Difficulty Level
           </label>
-
           <select
             name="difficulty"
             value={form.difficulty}
             onChange={handleChange}
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
+            disabled={isPending}
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -289,7 +384,6 @@ export const SubmitArtifact: React.FC = () => {
           <label className="block text-xs font-bold text-[#8fa0b3] uppercase mb-2">
             Tags (comma-separated)
           </label>
-
           <input
             type="text"
             name="tags"
@@ -297,6 +391,7 @@ export const SubmitArtifact: React.FC = () => {
             onChange={handleChange}
             placeholder="speedrun, no-hit, glitch"
             className="w-full px-4 py-3 bg-[#0f1116] border-2 border-[#232730] rounded text-[#dbe3eb]"
+            disabled={isPending}
           />
           {errors.tags && (
             <p className="text-red-400 text-xs mt-1">{errors.tags}</p>
@@ -305,14 +400,23 @@ export const SubmitArtifact: React.FC = () => {
 
         <button
           type="submit"
-          disabled={!videoFile || isPending}
-          className="w-full px-6 py-4 bg-[#1b1e26] text-[#98dc48] border-2 border-[#5c852b] rounded-lg font-bold disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed hover:bg-[#232832] transition-colors"
+          disabled={!videoFile || isPending || uploadStatus === "uploading"}
+          className={`w-full px-6 py-4 bg-[#1b1e26] border-2 rounded-lg font-bold cursor-pointer transition-colors
+            ${
+              !videoFile || isPending || uploadStatus === "uploading"
+                ? "opacity-50 cursor-not-allowed border-[#5c852b] text-[#98dc48]"
+                : "text-[#98dc48] border-[#5c852b] hover:bg-[#232832]"
+            }`}
         >
-          {isPending ? "Processing..." : "Store In Archive"}
+          {isPending || uploadStatus === "uploading"
+            ? `Uploading... ${Math.round(uploadProgress)}%`
+            : uploadStatus === "complete"
+              ? "Complete! Redirecting..."
+              : "Store In Archive"}
         </button>
 
         <p className="text-xs text-center text-[#7a8699]">
-          By submitting, you agree this will be permanently stored.
+          By submitting, you agree this will be permanently stored on Arweave.
         </p>
       </form>
     </div>

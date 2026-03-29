@@ -7,7 +7,7 @@ import {
   getAssetByIdApi,
   completeUploadApi,
   getUserAssets,
-  getAnyUserAssets
+  getAnyUserAssets,
 } from "../assets.api";
 
 export function useAssets() {
@@ -30,7 +30,7 @@ export function useUserAssets() {
     queryFn: getUserAssets,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    // refetchInterval: 10000,
+    refetchInterval: 10000,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
@@ -43,9 +43,9 @@ export function useAnyUserAssets(userId: string) {
     gcTime: 1000 * 60 * 30,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
+    enabled: !!userId,
   });
 }
-
 
 export function useAsset(assetId: string) {
   return useQuery({
