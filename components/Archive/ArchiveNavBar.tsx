@@ -25,6 +25,8 @@ export const ArchiveNavBar: React.FC<ArchiveNavBarProps> = ({
   const user: UserProfile =
     (profile?.user as UserProfile) ?? ({} as UserProfile);
 
+    // Note
+
   return (
     <nav className="sticky top-0 z-50 bg-[#12141a] border-b border-[#232730] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4">
