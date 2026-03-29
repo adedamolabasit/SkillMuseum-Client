@@ -1,5 +1,4 @@
-export const API_BASE_URL = "http://localhost:8000/api";
-// export const API_BASE_URL = "https://adaptable-creativity-production-aeee.up.railway.app/api";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 export const VERIFY_TOKEN = `${API_BASE_URL}/auth/verify`;
 export const LOGOUT_USER = `${API_BASE_URL}/auth/logout`;
 export const PROFILE = `${API_BASE_URL}/auth/me`;
