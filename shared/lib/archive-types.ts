@@ -1,4 +1,3 @@
-// Performance Status Tiers (Museum Exhibit Hierarchy)
 export enum PerformanceStatus {
   GALLERY_EXHIBIT = "Gallery Exhibit",
   MASTERPIECE = "Masterpiece",

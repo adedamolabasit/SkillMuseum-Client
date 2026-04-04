@@ -478,8 +478,6 @@ export default function AssetDetailPage() {
                   <p className="text-sm font-bold">{currentArtifact?.game}</p>
                 </div>
 
-     
-
                 <div>
                   <p className="text-xs text-[#7a8699] font-mono mb-1">
                     STORED
@@ -496,15 +494,15 @@ export default function AssetDetailPage() {
                   </p>
                 </div>
 
-                           <div>
+                <div>
                   <p className="text-xs text-[#7a8699] font-mono mb-1">
                     ARTIFACT ID
                   </p>
-                 
+
                   <div className="flex items-center gap-2">
-                     <p className="text-xs font-mono text-[#98dc48] truncate">
-                    {currentArtifact.arweaveMediaTxId}
-                  </p>
+                    <p className="text-xs font-mono text-[#98dc48] truncate">
+                      {currentArtifact.arweaveMediaTxId}
+                    </p>
                     <button
                       onClick={() =>
                         navigator.clipboard.writeText(
